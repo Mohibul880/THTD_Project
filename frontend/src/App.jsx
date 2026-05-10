@@ -24,6 +24,10 @@ function App() {
   const [searchTerm, setSearchTerm] =
     useState("");
 
+  // SUCCESS MODAL
+  const [showModal, setShowModal] =
+    useState(false);
+
 
 
   // =====================================
@@ -106,6 +110,9 @@ function App() {
           "http://localhost:5000/api/forms",
           formData
         );
+
+        // SHOW SUCCESS MODAL
+        setShowModal(true);
 
       }
 
@@ -482,6 +489,43 @@ function App() {
         </div>
 
       </div>
+
+
+
+      {/* ================= SUCCESS MODAL ================= */}
+
+      {showModal && (
+
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+
+          <div className="bg-white rounded-2xl shadow-2xl p-8 w-[90%] max-w-md text-center">
+
+            <h1 className="text-4xl font-bold text-green-600 mb-4">
+
+              Thank You!
+
+            </h1>
+
+            <p className="text-lg mb-6 text-gray-700">
+
+              Thank You For Submitting Your Information
+
+            </p>
+
+            <button
+              onClick={() => setShowModal(false)}
+              className="btn btn-primary px-8"
+            >
+
+              Close
+
+            </button>
+
+          </div>
+
+        </div>
+
+      )}
 
     </>
 
