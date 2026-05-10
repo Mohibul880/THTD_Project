@@ -17,9 +17,12 @@ function App() {
   const [sortOrder, setSortOrder] =
     useState("desc");
 
-  // EDIT MODE
   const [editId, setEditId] =
     useState(null);
+
+  // SEARCH STATE
+  const [searchTerm, setSearchTerm] =
+    useState("");
 
 
 
@@ -84,7 +87,7 @@ function App() {
 
     try {
 
-      // EDIT DATA
+      // UPDATE DATA
       if (editId) {
 
         await axios.put(
@@ -96,7 +99,7 @@ function App() {
 
       }
 
-      // ADD DATA
+      // CREATE DATA
       else {
 
         await axios.post(
@@ -188,11 +191,44 @@ function App() {
 
 
 
+  // =====================================
+  // SEARCH FILTER
+  // =====================================
+
+  const filteredSubmissions =
+    submissions.filter((item) => {
+
+      const search =
+        searchTerm.toLowerCase();
+
+      return (
+
+        item.name?.toLowerCase().includes(search) ||
+
+        item.phone?.toLowerCase().includes(search) ||
+
+        item.subject?.toLowerCase().includes(search) ||
+
+        item.message?.toLowerCase().includes(search)
+
+      );
+
+    });
+
+
+
   return (
 
     <>
 
-      <Navbar />
+      {/* NAVBAR */}
+
+      <Navbar
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
+
+
 
       <div className="min-h-screen bg-base-200 p-6">
 
@@ -371,7 +407,7 @@ function App() {
 
                 <tbody>
 
-                  {submissions.map((item) => (
+                  {filteredSubmissions.map((item) => (
 
                     <tr key={item._id}>
 
@@ -398,8 +434,6 @@ function App() {
                       <td>
                         {item.message}
                       </td>
-
-                      {/* ACTION BUTTONS */}
 
                       <td className="flex gap-2">
 
