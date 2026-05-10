@@ -17,11 +17,15 @@ function App() {
   const [sortOrder, setSortOrder] =
     useState("desc");
 
+  // EDIT MODE
+  const [editId, setEditId] =
+    useState(null);
 
 
-  // =========================
+
+  // =====================================
   // FETCH DATA
-  // =========================
+  // =====================================
 
   const fetchData = async () => {
 
@@ -43,9 +47,9 @@ function App() {
 
 
 
-  // =========================
+  // =====================================
   // LOAD DATA
-  // =========================
+  // =====================================
 
   useEffect(() => {
 
@@ -55,9 +59,9 @@ function App() {
 
 
 
-  // =========================
+  // =====================================
   // HANDLE INPUT
-  // =========================
+  // =====================================
 
   const handleChange = (e) => {
 
@@ -70,9 +74,9 @@ function App() {
 
 
 
-  // =========================
+  // =====================================
   // HANDLE SUBMIT
-  // =========================
+  // =====================================
 
   const handleSubmit = async (e) => {
 
@@ -80,12 +84,29 @@ function App() {
 
     try {
 
-      await axios.post(
-        "http://localhost:5000/api/forms",
-        formData
-      );
+      // EDIT DATA
+      if (editId) {
 
-      // Clear Form
+        await axios.put(
+          `http://localhost:5000/api/forms/${editId}`,
+          formData
+        );
+
+        setEditId(null);
+
+      }
+
+      // ADD DATA
+      else {
+
+        await axios.post(
+          "http://localhost:5000/api/forms",
+          formData
+        );
+
+      }
+
+      // CLEAR FORM
       setFormData({
         name: "",
         Age: "",
@@ -94,7 +115,6 @@ function App() {
         message: "",
       });
 
-      // Reload Data
       fetchData();
 
     } catch (error) {
@@ -102,6 +122,67 @@ function App() {
       console.log(error);
 
     }
+
+  };
+
+
+
+  // =====================================
+  // DELETE DATA
+  // =====================================
+
+  const handleDelete = async (id) => {
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this data?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+
+      await axios.delete(
+        `http://localhost:5000/api/forms/${id}`
+      );
+
+      fetchData();
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+
+  };
+
+
+
+  // =====================================
+  // EDIT DATA
+  // =====================================
+
+  const handleEdit = (item) => {
+
+    setFormData({
+
+      name: item.name,
+
+      Age: item.Age,
+
+      phone: item.phone,
+
+      subject: item.subject,
+
+      message: item.message,
+
+    });
+
+    setEditId(item._id);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
 
   };
 
@@ -214,7 +295,9 @@ function App() {
 
               <button className="btn btn-primary md:col-span-2">
 
-                Submit Information
+                {editId
+                  ? "Update Information"
+                  : "Submit Information"}
 
               </button>
 
@@ -236,8 +319,6 @@ function App() {
 
               </h2>
 
-
-
               <select
                 className="select select-bordered w-full md:w-72"
                 value={sortOrder}
@@ -247,15 +328,11 @@ function App() {
               >
 
                 <option value="desc">
-
                   Newest First (Descending)
-
                 </option>
 
                 <option value="asc">
-
                   Oldest First (Ascending)
-
                 </option>
 
               </select>
@@ -284,6 +361,8 @@ function App() {
 
                     <th>Message</th>
 
+                    <th>Action</th>
+
                   </tr>
 
                 </thead>
@@ -297,38 +376,60 @@ function App() {
                     <tr key={item._id}>
 
                       <td>
-
                         {item.serialNumber}
-
                       </td>
 
                       <td>
-
                         {item.name}
-
                       </td>
 
                       <td>
-
                         {item.Age}
-
                       </td>
 
                       <td>
-
                         {item.phone}
-
                       </td>
 
                       <td>
-
                         {item.subject}
-
                       </td>
 
                       <td>
-
                         {item.message}
+                      </td>
+
+                      {/* ACTION BUTTONS */}
+
+                      <td className="flex gap-2">
+
+                        {/* EDIT BUTTON */}
+
+                        <button
+                          onClick={() =>
+                            handleEdit(item)
+                          }
+                          className="btn btn-info btn-sm text-white"
+                        >
+
+                          Edit
+
+                        </button>
+
+
+
+                        {/* DELETE BUTTON */}
+
+                        <button
+                          onClick={() =>
+                            handleDelete(item._id)
+                          }
+                          className="btn btn-error btn-sm text-white"
+                        >
+
+                          Delete
+
+                        </button>
 
                       </td>
 
