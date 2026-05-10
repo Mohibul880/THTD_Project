@@ -113,7 +113,7 @@ function App() {
                 </option>
 
                 <option>
-                  Web Development
+                  Free Test 
                 </option>
 
                 <option>
@@ -161,6 +161,7 @@ function App() {
 
                 <thead>
                   <tr>
+                    <th>SL</th>
                     <th>Name</th>
                     <th>Age</th>
                     <th>Phone</th>
@@ -170,15 +171,25 @@ function App() {
                 </thead>
 
                 <tbody>
-                  {submissions.map((item) => (
+
+                  {submissions.map((item, index) => (
                     <tr key={item._id}>
+
+                      <td>{index + 1}</td>
+
                       <td>{item.name}</td>
+
                       <td>{item.Age}</td>
+
                       <td>{item.phone}</td>
+
                       <td>{item.subject}</td>
+
                       <td>{item.message}</td>
+
                     </tr>
                   ))}
+
                 </tbody>
 
               </table>
