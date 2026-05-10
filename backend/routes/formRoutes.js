@@ -13,8 +13,16 @@ router.get("/", async (req, res) => {
 
   try {
 
+    // frontend থেকে sort value নিবে
+    // asc অথবা desc
+    const sortOrder = req.query.sort;
+
+    // asc হলে 1
+    // desc হলে -1
+    const sortValue = sortOrder === "asc" ? 1 : -1;
+
     const forms = await Form.find()
-      .sort({ serialNumber: 1 });
+      .sort({ serialNumber: sortValue });
 
     res.status(200).json(forms);
 
