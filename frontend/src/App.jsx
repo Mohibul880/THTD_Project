@@ -3,6 +3,7 @@ import axios from "axios";
 import Navbar from "./components/Navbar";
 
 function App() {
+
   const [formData, setFormData] = useState({
     name: "",
     Age: "",
@@ -13,58 +14,126 @@ function App() {
 
   const [submissions, setSubmissions] = useState([]);
 
+  const [sortOrder, setSortOrder] =
+    useState("desc");
+
+
+
+  // =========================
+  // FETCH DATA
+  // =========================
+
   const fetchData = async () => {
-    const res = await axios.get("http://localhost:5000/api/forms");
-    setSubmissions(res.data);
+
+    try {
+
+      const res = await axios.get(
+        `http://localhost:5000/api/forms?sort=${sortOrder}`
+      );
+
+      setSubmissions(res.data);
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+
   };
 
+
+
+  // =========================
+  // LOAD DATA
+  // =========================
+
   useEffect(() => {
+
     fetchData();
-  }, []);
+
+  }, [sortOrder]);
+
+
+
+  // =========================
+  // HANDLE INPUT
+  // =========================
 
   const handleChange = (e) => {
+
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+
   };
+
+
+
+  // =========================
+  // HANDLE SUBMIT
+  // =========================
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
-    await axios.post(
-      "http://localhost:5000/api/forms",
-      formData
-    );
+    try {
 
-    setFormData({
-      name: "",
-      Age: "",
-      phone: "",
-      subject: "",
-      message: "",
-    });
+      await axios.post(
+        "http://localhost:5000/api/forms",
+        formData
+      );
 
-    fetchData();
+      // Clear Form
+      setFormData({
+        name: "",
+        Age: "",
+        phone: "",
+        subject: "",
+        message: "",
+      });
+
+      // Reload Data
+      fetchData();
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+
   };
 
+
+
   return (
+
     <>
+
       <Navbar />
 
       <div className="min-h-screen bg-base-200 p-6">
-        <div className="max-w-5xl mx-auto">
 
-          {/* Form Section */}
+        <div className="max-w-6xl mx-auto">
+
+          {/* ================= FORM ================= */}
+
           <div className="bg-white rounded-xl shadow-xl p-6 mb-8">
 
             <h1 className="text-3xl font-bold text-center text-primary mb-2">
+
               Target Health & Technical Development Society
+
             </h1>
 
             <p className="text-center mb-6">
+
               Learn, Health, Grow
+
             </p>
+
+
 
             <form
               onSubmit={handleSubmit}
@@ -108,12 +177,13 @@ function App() {
                 onChange={handleChange}
                 required
               >
+
                 <option value="">
                   Select Subject
                 </option>
 
                 <option>
-                  Free Test 
+                  Free Test
                 </option>
 
                 <option>
@@ -131,6 +201,7 @@ function App() {
                 <option>
                   Volunteer Registration
                 </option>
+
               </select>
 
               <textarea
@@ -142,52 +213,127 @@ function App() {
               ></textarea>
 
               <button className="btn btn-primary md:col-span-2">
+
                 Submit Information
+
               </button>
 
             </form>
+
           </div>
 
-          {/* Table Section */}
+
+
+          {/* ================= TABLE ================= */}
+
           <div className="bg-white rounded-xl shadow-xl p-6">
 
-            <h2 className="text-2xl font-bold mb-4">
-              Submitted Data
-            </h2>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+
+              <h2 className="text-2xl font-bold">
+
+                Submitted Data
+
+              </h2>
+
+
+
+              <select
+                className="select select-bordered w-full md:w-72"
+                value={sortOrder}
+                onChange={(e) =>
+                  setSortOrder(e.target.value)
+                }
+              >
+
+                <option value="desc">
+
+                  Newest First (Descending)
+
+                </option>
+
+                <option value="asc">
+
+                  Oldest First (Ascending)
+
+                </option>
+
+              </select>
+
+            </div>
+
+
 
             <div className="overflow-x-auto">
 
               <table className="table table-zebra">
 
                 <thead>
+
                   <tr>
+
                     <th>SL</th>
+
                     <th>Name</th>
+
                     <th>Age</th>
+
                     <th>Phone</th>
+
                     <th>Subject</th>
+
                     <th>Message</th>
+
                   </tr>
+
                 </thead>
+
+
 
                 <tbody>
 
-                  {submissions.map((item, index) => (
+                  {submissions.map((item) => (
+
                     <tr key={item._id}>
 
-                      <td>{index + 1}</td>
+                      <td>
 
-                      <td>{item.name}</td>
+                        {item.serialNumber}
 
-                      <td>{item.Age}</td>
+                      </td>
 
-                      <td>{item.phone}</td>
+                      <td>
 
-                      <td>{item.subject}</td>
+                        {item.name}
 
-                      <td>{item.message}</td>
+                      </td>
+
+                      <td>
+
+                        {item.Age}
+
+                      </td>
+
+                      <td>
+
+                        {item.phone}
+
+                      </td>
+
+                      <td>
+
+                        {item.subject}
+
+                      </td>
+
+                      <td>
+
+                        {item.message}
+
+                      </td>
 
                     </tr>
+
                   ))}
 
                 </tbody>
@@ -195,12 +341,17 @@ function App() {
               </table>
 
             </div>
+
           </div>
 
         </div>
+
       </div>
+
     </>
+
   );
+
 }
 
 export default App;
